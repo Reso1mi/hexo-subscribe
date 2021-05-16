@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    a {
+        text-decoration: none;
+        color: #CECFCE;
+        font-size: 16px;
+    }
+
+    .main {
+        padding-top: 100px;
+        background-color: #F7F7F7;
+        padding-bottom: 100px;
+    }
+
+
+    .news_head {
+        background-color: #F7F7F7;
+        text-align: center;
+        width: 120px;
+        line-height: 30px;
+        margin: 30px auto;
+        background-color: #fff;
+        border: 1px solid #333;
+        border-radius: 16px;
+    }
+
+    .news_title_cn {
+        color: #949494;
+        font-family: Georgia;
+        font-size: 20px;
+        font-style: italic;
+        font-weight: normal;
+        text-align: center;
+    }
+
+    .news_title_en {
+        margin-top: 10px;
+        color: #222222;
+        font-family: Helvetica;
+        font-size: 40px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .news_content {
+        border-top: 1px solid #E0E0E0;
+        padding-top: 20px;
+        margin: 50px auto;
+        width: 560px;
+        color: #444444;
+        font-family: Helvetica;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .news_content ul {
+        margin-left: -17px;
+    }
+
+    .goHome {
+        padding: 18px;
+        margin: 0 auto;
+        width: 130px;
+        height: 26px;
+        background-color: #009FC7;
+    }
+
+    .goHome a {
+        font-size: 18px;
+        color: #fff;
+    }
+
+    .footer {
+        padding-top: 30px;
+        margin: 0 auto;
+        width: 560px;
+        text-align: center;
+    }
+
+    .footer .img-wrapper {
+        width: 200px;
+        height: 154px;
+        margin: 20px auto;
+    }
+</style>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div class="main">
+    <div class="news">
+        <div class="news_head">
+            imlgw.top
+        </div>
+        <div class="news_title_cn">
+            文章更新了！
+        </div>
+        <div class="news_title_en">
+            Article updated!
+        </div>
+        <div class="news_content">
+            Recent articles
+            <ul>
+                {% for blog in blogs %}
+                <li><a href="{{ blog.url }}">{{ blog.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="goHome">
+        <a href="https://imlgw.top" style="text-decoration: none">Find Out More</a>
+    </div>
+</div>
+<!--<div class="footer">-->
+<!--    <div class="text-wrapper">-->
+<!--        关注我的Github-->
+<!--    </div>-->
+<!--    <div class="img-wrapper">-->
+<!--        <a href="https://github.com/imlgw" target="_blank"><img width="200px"-->
+<!--                                                                src="https://i.loli.net/2021/05/14/AS3W6fTqDms2eay.jpg"-->
+<!--                                                                alt=""></a>-->
+<!--    </div>-->
+<!--</div>-->
+</body>
+</html>
