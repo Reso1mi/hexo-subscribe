@@ -17,8 +17,26 @@ class UpdateBlog:
         self.url = url
 
 
+# def get_upd(repo_dir):
+#     # git config --global core.quotepath false
+#     p = Popen("git diff --name-only HEAD~ HEAD", shell=True, stdout=PIPE, stderr=PIPE, cwd=repo_dir)
+#     p.wait()
+#     diff_name = p.stdout
+#     update_blogs = []
+#     for article in diff_name:
+#         # 解码
+#         article = article.decode("utf-8").strip()
+#         # 获取时间
+#         date_time = get_date(repo_dir + '/' + article)
+#         # 去除空格和后缀.md
+#         article = article.replace(' ', '').lower().split('.')[0]
+#         # 拼接文章链接
+#         url = config.CLIENT_CONFIG['domain'] + date_time + '/' + '-'.join(
+#             lazy_pinyin(''.join(c for c in article if c not in string.punctuation)))
+#         update_blogs.append(UpdateBlog(article, url))
+#     return update_blogs
+
 def get_upd(repo_dir):
-    # git config --global core.quotepath false
     p = Popen("git diff --name-only HEAD~ HEAD", shell=True, stdout=PIPE, stderr=PIPE, cwd=repo_dir)
     p.wait()
     diff_name = p.stdout

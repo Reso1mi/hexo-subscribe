@@ -94,7 +94,7 @@
             imlgw.top
         </div>
         <div class="news_title_cn">
-            文章更新了！
+            博客有更新了！
         </div>
         <div class="news_title_en">
             Article updated!
@@ -104,6 +104,13 @@
             <ul>
                 {% for blog in blogs %}
                 <li><a href="{{ blog.url }}">{{ blog.name }}</a></li>
+                    {% if blog.status == 'added' %}
+                       <li>添加</li>
+                    {% endif %}
+                    {% if blog.status == 'modified' %}
+                       <li>更新</li>
+                        <li>{{ blog.patch }}</li>
+                    {% endif %}
                 {% endfor %}
             </ul>
         </div>
