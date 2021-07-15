@@ -143,3 +143,4 @@ cython_debug/
 .idea
 *.out
 config.py
+*.db

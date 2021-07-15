@@ -39,7 +39,8 @@ def hook():
     env = Environment(loader=FileSystemLoader(searchpath=path))
     template = env.get_template('mail.html')
     content = template.render(blogs=blogs)
-    # send_mail(emails, config.CLIENT_CONFIG['upd_subject'], content, 'html')
+    emails = [addr.email for addr in Addr.select()]
+    send_mail(emails, config.CLIENT_CONFIG['upd_subject'], content, 'html')
 
 
 @app.route(context + '/subscribe', methods=['POST'])
@@ -61,7 +62,7 @@ def save_adds():
         Addr.create(ip=ip, email=email, name=name)
         return render_template('/subscribe.html', status=1)
     else:
-        return render_template('/subscribe.html', status=2, msg="这个邮箱已经订阅过了喔~")
+        return render_template('/subscribe.html', status=2, msg="该邮箱已经订阅过了喔~")
 
 
 @app.route(context + '/')
@@ -92,7 +93,4 @@ def get_date(md_name):
 
 
 if __name__ == '__main__':
-    Addr.create(ip="127.0.0.1", email="print@qq.com", name="lgw")
-    users = Addr.select()
-    emails = [user.email for user in users]
-    # app.run(port=config.SERVER_CONFIG['port'])
+    app.run(port=config.SERVER_CONFIG['port'])
