@@ -1,8 +1,8 @@
 import time
 from peewee import *
-
+from config import Config
 # 改为SQLite3
-sqlite_db = SqliteDatabase('./address.db')
+sqlite_db = SqliteDatabase(Config.db)
 
 
 class BaseModel(Model):
@@ -16,6 +16,3 @@ class Addr(BaseModel):  # 类的小写即表名
     email = TextField()
     ip = TextField()
     create_date = DateTimeField(default=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-
-
-Addr.create_table()

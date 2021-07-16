@@ -1,21 +1,22 @@
 import json
+from datetime import datetime
 from smtplib import SMTPRecipientsRefused
 from flask import Flask, request, render_template
 from jinja2 import Environment, FileSystemLoader
 
-import config
+from config import Config
 from mail import send_mail
-from models import Addr
 import requests
 import frontmatter
 import string
-from pypinyin import lazy_pinyin
 from zhon.hanzi import punctuation
 import os
 
+from models import Addr
+
 app = Flask(__name__)
 # 项目根路径
-context = config.SERVER_CONFIG['context']
+context = Config.server_context
 
 punctuation += string.punctuation
 
@@ -33,14 +34,18 @@ def hook():
     payload = json.loads(request.get_data())
     before = payload['before']
     after = payload['after']
-    blogs = get_diff(config.SERVER_CONFIG['github_compare_api'], before, after)
+    blogs = get_diff(Config.diff_api, before, after)
 
     path = os.path.join(os.path.dirname(__file__), './templates')
     env = Environment(loader=FileSystemLoader(searchpath=path))
     template = env.get_template('mail.html')
     content = template.render(blogs=blogs)
-    emails = [addr.email for addr in Addr.select()]
-    send_mail(emails, config.CLIENT_CONFIG['upd_subject'], content, 'html')
+    emails = [address.email for address in Addr.select()]
+    # try:
+    send_mail(emails, Config.upd_subject, content, 'html')
+    # except SMTPRecipientsRefused:
+    #     return render_template('/subscribe.html', status=2, msg="请输入正确的邮箱！！！")
+    return 'success'
 
 
 @app.route(context + '/subscribe', methods=['POST'])
@@ -55,7 +60,7 @@ def save_adds():
         order = Addr.select().count()
         content = render_template('/success.html', name=name, order=order + 1)
         try:
-            send_mail([email], config.CLIENT_CONFIG['sub_subject'], content, config.CLIENT_CONFIG['msg_type'])
+            send_mail([email], Config.sub_subject, content, 'html')
         except SMTPRecipientsRefused:
             return render_template('/subscribe.html', status=2, msg="请输入正确的邮箱！！！")
         # 验证邮箱合法后再插入数据库
@@ -73,24 +78,29 @@ def index():
 def get_diff(api, before, after):
     adds = api + before + '...' + after
     resp = requests.get(adds).json()
-    print(resp)
     files = resp.get('files')
-    print(files)
-    blogs = [Blog(file) for file in files]
-    # 获取日期
+    blogs = []
+    for file in files:
+        file['patch'] = file['patch'][18:]
+        blogs.append(Blog(file))
+    # blogs = [Blog(file) for file in files]
+    # 获取url
     for blog in blogs:
-        blog.date = get_date(blog.filename)
-        blog.url = config.CLIENT_CONFIG['domain'] + blog.date + '/' + '-'.join(
-            lazy_pinyin(''.join(c for c in blog.filename.replace(' ', '').lower().split('.')[0] if
-                                c not in punctuation)))
+        blog.url = get_url(blog.filename)
     return blogs
 
 
-def get_date(md_name):
-    file_raw = requests.get(config.SERVER_CONFIG['github_raw_api'] + md_name).text
+def get_url(md_name):
+    file_raw = requests.get(Config.raw_api + md_name).text
     md = frontmatter.loads(file_raw)
-    return md.metadata['date']
+    # 规格化一下：2021/7/1 -> 2021/07/01
+    date = datetime.strptime(md.metadata['date'], '%Y/%m/%d')
+    sdate = datetime.strftime(date, '%Y/%m/%d')
+    abbrlink = md.metadata['abbrlink']
+    return Config.domain + sdate + '/' + abbrlink
 
 
 if __name__ == '__main__':
-    app.run(port=config.SERVER_CONFIG['port'])
+    # 建表
+    Addr.create_table()
+    app.run(port=Config.server_port)

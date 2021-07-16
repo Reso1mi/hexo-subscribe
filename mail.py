@@ -2,7 +2,7 @@ from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
 from email.header import Header
 import smtplib
-import config
+from config import Config
 
 
 def _format_addr(s):
@@ -11,11 +11,10 @@ def _format_addr(s):
 
 
 def send_mail(to_addrs, subject, text, msg_type):
-    client_cfg = config.CLIENT_CONFIG
-    from_addr = client_cfg['account']
-    password = client_cfg['password']
-    smtp_server = client_cfg['smtp_server']
-    port = client_cfg['smtp_port']
+    from_addr = Config.account
+    password = Config.password
+    smtp_server = Config.smtp_server
+    port = Config.smtp_port
     msg = MIMEText(text, msg_type, "utf-8")
     msg["From"] = _format_addr("%s <%s>" % ("Tadow", from_addr))
     # msg["To"] = Header(",".join(to_addrs), "utf-8")

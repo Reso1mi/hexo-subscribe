@@ -50,7 +50,6 @@
         width: 560px;
         color: #444444;
         font-family: Helvetica;
-        font-size: 22px;
         font-weight: bold;
     }
 
@@ -83,6 +82,12 @@
         height: 154px;
         margin: 20px auto;
     }
+
+    .textFlow {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
 </style>
 <head>
     <meta charset="UTF-8">
@@ -94,7 +99,7 @@
             imlgw.top
         </div>
         <div class="news_title_cn">
-            博客有更新了！
+            Tadow又更新了！！！
         </div>
         <div class="news_title_en">
             Article updated!
@@ -103,14 +108,17 @@
             Recent articles
             <ul>
                 {% for blog in blogs %}
-                <li><a href="{{ blog.url }}">{{ blog.name }}</a></li>
-                    {% if blog.status == 'added' %}
-                       <li>添加</li>
-                    {% endif %}
-                    {% if blog.status == 'modified' %}
-                       <li>更新</li>
-                        <li>{{ blog.patch }}</li>
-                    {% endif %}
+                    <li>
+                        <a href="{{ blog.url }}">{{ blog.filename }} &nbsp;
+                            {% if blog.status == 'modified' %}
+                                <span style="color:#52bcee">Update</span>
+                            {% endif %}
+                            {% if blog.status == 'added' %}
+                                <span style="color:#9de58a">Add</span>
+                            {% endif %}
+                        </a>
+                        <div class="textFlow">{{ blog.patch }}</div>
+                    </li>
                 {% endfor %}
             </ul>
         </div>
