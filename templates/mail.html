@@ -3,7 +3,7 @@
 <style>
     a {
         text-decoration: none;
-        color: #CECFCE;
+
         font-size: 16px;
     }
 
@@ -13,33 +13,12 @@
         padding-bottom: 100px;
     }
 
-
-    .news_head {
-        background-color: #F7F7F7;
-        text-align: center;
-        width: 120px;
-        line-height: 30px;
-        margin: 30px auto;
-        background-color: #fff;
-        border: 1px solid #333;
-        border-radius: 16px;
-    }
-
     .news_title_cn {
         color: #949494;
         font-family: Georgia;
         font-size: 20px;
         font-style: italic;
         font-weight: normal;
-        text-align: center;
-    }
-
-    .news_title_en {
-        margin-top: 10px;
-        color: #222222;
-        font-family: Helvetica;
-        font-size: 40px;
-        font-weight: bold;
         text-align: center;
     }
 
@@ -60,7 +39,7 @@
     .goHome {
         padding: 18px;
         margin: 0 auto;
-        width: 130px;
+        width: 110px;
         height: 26px;
         background-color: #009FC7;
     }
@@ -70,12 +49,6 @@
         color: #fff;
     }
 
-    .footer {
-        padding-top: 30px;
-        margin: 0 auto;
-        width: 560px;
-        text-align: center;
-    }
 
     .footer .img-wrapper {
         width: 200px;
@@ -87,6 +60,7 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        color: #CECFCE;
     }
 </style>
 <head>
@@ -95,26 +69,21 @@
 <body>
 <div class="main">
     <div class="news">
-        <div class="news_head">
-            imlgw.top
-        </div>
         <div class="news_title_cn">
-            Tadow又更新了！！！
+            Tadow又更新啦！
         </div>
-        <div class="news_title_en">
-            Article updated!
-        </div>
+
         <div class="news_content">
-            Recent articles
             <ul>
                 {% for blog in blogs %}
-                    <li>
-                        <a href="{{ blog.url }}">{{ blog.filename }} &nbsp;
+                    <li style="list-style-type:none;">
+                        <a href="{{ blog.url }}">
+                            {{ blog.filename }} &nbsp;
                             {% if blog.status == 'modified' %}
                                 <span style="color:#52bcee">Update</span>
                             {% endif %}
                             {% if blog.status == 'added' %}
-                                <span style="color:#9de58a">Add</span>
+                                <span style="color:#78ac6b">Add</span>
                             {% endif %}
                         </a>
                         <div class="textFlow">{{ blog.patch }}</div>
@@ -124,18 +93,8 @@
         </div>
     </div>
     <div class="goHome">
-        <a href="https://imlgw.top" style="text-decoration: none">Find Out More</a>
+        <a href="https://imlgw.top" style="text-decoration: none">HOME PAGE</a>
     </div>
 </div>
-<!--<div class="footer">-->
-<!--    <div class="text-wrapper">-->
-<!--        关注我的Github-->
-<!--    </div>-->
-<!--    <div class="img-wrapper">-->
-<!--        <a href="https://github.com/imlgw" target="_blank"><img width="200px"-->
-<!--                                                                src="https://i.loli.net/2021/05/14/AS3W6fTqDms2eay.jpg"-->
-<!--                                                                alt=""></a>-->
-<!--    </div>-->
-<!--</div>-->
 </body>
 </html>

@@ -9,7 +9,6 @@ from mail import send_mail
 import requests
 import frontmatter
 import string
-from zhon.hanzi import punctuation
 import os
 
 from models import Addr
@@ -17,8 +16,6 @@ from models import Addr
 app = Flask(__name__)
 # 项目根路径
 context = Config.server_context
-
-punctuation += string.punctuation
 
 
 class Blog:
@@ -78,15 +75,12 @@ def index():
 def get_diff(api, before, after):
     adds = api + before + '...' + after
     resp = requests.get(adds).json()
-    files = resp.get('files')
-    blogs = []
-    for file in files:
-        file['patch'] = file['patch'][18:]
-        blogs.append(Blog(file))
-    # blogs = [Blog(file) for file in files]
-    # 获取url
+    blogs = [Blog(file) for file in resp.get('files')]
+    # 调整属性值返回给前端
     for blog in blogs:
         blog.url = get_url(blog.filename)
+        blog.filename = blog.filename[:-3]
+        blog.patch = ''.join([c for c in blog.patch if c not in string.punctuation and not c.isdigit()])
     return blogs
 
 
