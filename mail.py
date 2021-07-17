@@ -20,7 +20,6 @@ def send_mail(to_addrs, subject, text, msg_type):
     # msg["To"] = Header(",".join(to_addrs), "utf-8")
     msg["Subject"] = Header(subject, "utf-8").encode()
     server = smtplib.SMTP(smtp_server, port)
-    server.set_debuglevel(1)
     server.login(from_addr, password)
     server.sendmail(from_addr, to_addrs, msg.as_string())
     server.quit()

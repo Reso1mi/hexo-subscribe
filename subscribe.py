@@ -1,3 +1,5 @@
+import hashlib
+import hmac
 import json
 from datetime import datetime
 from smtplib import SMTPRecipientsRefused
@@ -18,6 +20,8 @@ app = Flask(__name__)
 context = Config.server_context
 
 
+# todo: 日志
+
 class Blog:
     def __init__(self, dicts):
         self.__dict__ = dicts
@@ -28,21 +32,26 @@ class Blog:
 
 @app.route(context + '/hook', methods=['POST'])
 def hook():
-    payload = json.loads(request.get_data())
+    payload = json.loads(request.data)
     before = payload['before']
     after = payload['after']
     blogs = get_diff(Config.diff_api, before, after)
-
+    if not verify_signature(request.data):
+        return 'authentication failed'
     path = os.path.join(os.path.dirname(__file__), './templates')
     env = Environment(loader=FileSystemLoader(searchpath=path))
     template = env.get_template('mail.html')
     content = template.render(blogs=blogs)
     emails = [address.email for address in Addr.select()]
-    # try:
     send_mail(emails, Config.upd_subject, content, 'html')
-    # except SMTPRecipientsRefused:
-    #     return render_template('/subscribe.html', status=2, msg="请输入正确的邮箱！！！")
     return 'success'
+
+
+# 验证hook签名（https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks）
+def verify_signature(payload):
+    h = hmac.new(key=Config.key.encode('UTF-8'), msg=payload, digestmod=hashlib.sha256)
+    signature = 'sha256=' + h.hexdigest()
+    return hmac.compare_digest(signature, request.headers['X-Hub-Signature-256'])
 
 
 @app.route(context + '/subscribe', methods=['POST'])
@@ -51,25 +60,25 @@ def save_adds():
     email = request.form['email']
     name = request.form['name']
     if email == "" or name == "":
-        return render_template('/subscribe.html', status=2, msg="请输入正确的邮箱和用户名！")
+        return render_template('./subscribe.html', status=2, msg="请输入正确的邮箱和用户名！")
     # print(email, name)
     if Addr.select().where(Addr.email == email).count() == 0:
         order = Addr.select().count()
-        content = render_template('/success.html', name=name, order=order + 1)
+        content = render_template('./success.html', name=name, order=order + 1)
         try:
             send_mail([email], Config.sub_subject, content, 'html')
         except SMTPRecipientsRefused:
-            return render_template('/subscribe.html', status=2, msg="请输入正确的邮箱！！！")
+            return render_template('./subscribe.html', status=2, msg="请输入正确的邮箱！！！")
         # 验证邮箱合法后再插入数据库
         Addr.create(ip=ip, email=email, name=name)
-        return render_template('/subscribe.html', status=1)
+        return render_template('./subscribe.html', status=1)
     else:
-        return render_template('/subscribe.html', status=2, msg="该邮箱已经订阅过了喔~")
+        return render_template('./subscribe.html', status=2, msg="该邮箱已经订阅过了喔~")
 
 
 @app.route(context + '/')
 def index():
-    return render_template('/subscribe.html')
+    return render_template('./subscribe.html')
 
 
 def get_diff(api, before, after):
