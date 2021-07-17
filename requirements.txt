@@ -1,0 +1,5 @@
+peewee~=3.14.4
+requests~=2.25.1
+python-frontmatter~=1.0.0
+Flask~=1.1.2
+Jinja2~=3.0.0
