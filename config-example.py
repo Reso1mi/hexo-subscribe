@@ -23,5 +23,5 @@ class Config:
     raw_api = 'https://cdn.jsdelivr.net/gh/username/repo/'
     # git远程仓库compare分支的api
     diff_api = 'https://api.github.com/repos/username/repo/compare/'
-    # hook的签名
+    # hook的签名密钥
     key = '*************'
