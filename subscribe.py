@@ -12,6 +12,7 @@ import requests
 import frontmatter
 import string
 import os
+from urllib.parse import urlparse
 
 from models import Addr
 
@@ -32,18 +33,19 @@ class Blog:
 
 @app.route(context + '/hook', methods=['POST'])
 def hook():
+    if not verify_signature(request.data):
+        return 'authentication failed'
     payload = json.loads(request.data)
     before = payload['before']
     after = payload['after']
     blogs = get_diff(Config.diff_api, before, after)
-    if not verify_signature(request.data):
-        return 'authentication failed'
     path = os.path.join(os.path.dirname(__file__), './templates')
     env = Environment(loader=FileSystemLoader(searchpath=path))
     template = env.get_template('mail.html')
     content = template.render(blogs=blogs)
     emails = [address.email for address in Addr.select()]
-    send_mail(emails, Config.upd_subject, content, 'html')
+    send_mail("privateli@qq.com", Config.upd_subject, content, 'html')
+    # send_mail(emails, Config.upd_subject, content, 'html')
     return 'success'
 
 
@@ -87,20 +89,25 @@ def get_diff(api, before, after):
     blogs = [Blog(file) for file in resp.get('files')]
     # 调整属性值返回给前端
     for blog in blogs:
-        blog.url = get_url(blog.filename)
+        blog.url, patch = get_url_patch(blog.raw_url)
         blog.filename = blog.filename[:-3]
-        blog.patch = ''.join([c for c in blog.patch if c not in string.punctuation and not c.isdigit()])
+        blog.patch = patch
     return blogs
 
 
-def get_url(md_name):
-    file_raw = requests.get(Config.raw_api + md_name).text
+def get_url_patch(gh_raw_url):
+    res=urlparse(gh_raw_url)
+    raw_url = Config().raw_api + res.path.replace('/raw', '')
+    print(raw_url)
+    file_raw = requests.get(raw_url).text
+    # print(file_raw)
     md = frontmatter.loads(file_raw)
     # 规格化一下：2021/7/1 -> 2021/07/01
     date = datetime.strptime(md.metadata['date'], '%Y/%m/%d')
     sdate = datetime.strftime(date, '%Y/%m/%d')
     abbrlink = md.metadata['abbrlink']
-    return Config.domain + sdate + '/' + abbrlink
+    # print(md.content)
+    return Config.domain + sdate + '/' + abbrlink, md.content[:100]
 
 
 if __name__ == '__main__':
