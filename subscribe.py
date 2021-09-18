@@ -10,7 +10,6 @@ from config import Config
 from mail import send_mail
 import requests
 import frontmatter
-import string
 import os
 from urllib.parse import urlparse
 
@@ -33,8 +32,8 @@ class Blog:
 
 @app.route(context + '/hook', methods=['POST'])
 def hook():
-    if not verify_signature(request.data):
-        return 'authentication failed'
+    # if not verify_signature(request.data):
+    #     return 'authentication failed'
     payload = json.loads(request.data)
     before = payload['before']
     after = payload['after']
@@ -44,8 +43,8 @@ def hook():
     template = env.get_template('mail.html')
     content = template.render(blogs=blogs)
     emails = [address.email for address in Addr.select()]
-    send_mail("privateli@qq.com", Config.upd_subject, content, 'html')
-    # send_mail(emails, Config.upd_subject, content, 'html')
+    # send_mail("privateli@qq.com", Config.upd_subject, content, 'html')
+    send_mail(emails, Config.upd_subject, content, 'html')
     return 'success'
 
 
@@ -96,7 +95,7 @@ def get_diff(api, before, after):
 
 
 def get_url_patch(gh_raw_url):
-    res=urlparse(gh_raw_url)
+    res = urlparse(gh_raw_url)
     raw_url = Config().raw_api + res.path.replace('/raw', '')
     print(raw_url)
     file_raw = requests.get(raw_url).text

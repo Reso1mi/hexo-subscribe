@@ -6,95 +6,28 @@
 
         font-size: 16px;
     }
-
-    .main {
-        padding-top: 100px;
-        background-color: #F7F7F7;
-        padding-bottom: 100px;
-    }
-
-    .news_title_cn {
-        color: #949494;
-        font-family: Georgia;
-        font-size: 20px;
-        font-style: italic;
-        font-weight: normal;
-        text-align: center;
-    }
-
-    .news_content {
-        border-top: 1px solid #E0E0E0;
-        padding-top: 20px;
-        margin: 50px auto;
-        width: 560px;
-        color: #444444;
-        font-family: Helvetica;
-        font-weight: bold;
-    }
-
-    .news_content ul {
-        margin-left: -17px;
-    }
-
-    .goHome {
-        padding: 18px;
-        margin: 0 auto;
-        width: 110px;
-        height: 26px;
-        background-color: #009FC7;
-    }
-
-    .goHome a {
-        font-size: 18px;
-        color: #fff;
-    }
-
-
-    .footer .img-wrapper {
-        width: 200px;
-        height: 154px;
-        margin: 20px auto;
-    }
-
-    .textFlow {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        color: #CECFCE;
-    }
 </style>
 <head>
     <meta charset="UTF-8">
 </head>
 <body>
-<div class="main">
-    <div class="news">
-        <div class="news_title_cn">
-            Tadow又更新啦！
-        </div>
-
-        <div class="news_content">
-            <ul>
-                {% for blog in blogs %}
-                    <li style="list-style-type:none;">
-                        <a href="{{ blog.url }}">
-                            {{ blog.filename }} &nbsp;
-                            {% if blog.status == 'modified' %}
-                                <span style="color:#52bcee">Upd</span>
-                            {% endif %}
-                            {% if blog.status == 'added' %}
-                                <span style="color:#78ac6b">New</span>
-                            {% endif %}
-                        </a>
-                        <div class="textFlow">{{ blog.patch }}</div>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-    <div class="goHome">
-        <a href="https://imlgw.top" style="text-decoration: none">HOME PAGE</a>
-    </div>
+<div>
+    <h2>Tadow又更新啦！</h2>
+    <ul>
+        {% for blog in blogs %}
+            <li>
+                <a href="{{ blog.url }}">
+                    {{ blog.filename }} &nbsp;
+                    {% if blog.status == 'modified' %}
+                        <span style="color:#52bcee">[Upd]</span>
+                    {% endif %}
+                    {% if blog.status == 'added' %}
+                        <span style="color:#78ac6b">[New]</span>
+                    {% endif %}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
 </div>
 </body>
 </html>
